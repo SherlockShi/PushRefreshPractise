@@ -55,6 +55,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // 不使用 SmartRefreshLayout 的加载更多功能
+        mSmartRefreshLayout.setEnableAutoLoadMore(false);
+
         mAdapterNumber = new BaseQuickAdapter<String, BaseViewHolder>(R.layout.item_number) {
             @Override
             protected void convert(BaseViewHolder helper, String item) {
@@ -125,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void fail(Exception e) {
                 Toast.makeText(MainActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
-                afterRequestDataError();
+                afterRequestDataError("网络错误");
             }
         }).start();
     }
@@ -145,14 +148,21 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void fail(Exception e) {
                 Toast.makeText(MainActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
-                afterRequestDataError();
+                afterRequestDataError("网络错误");
             }
         }).start();
     }
 
-    private void afterRequestDataError() {
+    private void afterRequestDataError(String msg) {
+//        if (!StringUtil.isEmpty(msg)) {
+//            ToastUtils.showWarn(msg);
+//        }
+
         if (isRefresh) {
             mAdapterNumber.setNewData(null);
+            if (mEmptyView.getParent() != null) {
+                ((ViewGroup) mEmptyView.getParent()).removeView(mEmptyView);
+            }
             mAdapterNumber.setEmptyView(mEmptyView);
 
             mAdapterNumber.setEnableLoadMore(true);
@@ -162,9 +172,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void afterRequestDataNull() {
+    private void afterRequestDataNull(String msg) {
+//        if (!StringUtil.isEmpty(msg)) {
+//            ToastUtils.showWarn(msg);
+//        }
+
         if (isRefresh) {
             mAdapterNumber.setNewData(null);
+            if (mEmptyView.getParent() != null) {
+                ((ViewGroup) mEmptyView.getParent()).removeView(mEmptyView);
+            }
             mAdapterNumber.setEmptyView(mEmptyView);
 
             mAdapterNumber.setEnableLoadMore(true);
@@ -180,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (isRefresh) {
             if (size <= 0) {
-                afterRequestDataNull();
+                afterRequestDataNull("");
             } else {
                 mAdapterNumber.setNewData(data);
 
@@ -194,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
             }
         } else {
             if (size <= 0) {
-                afterRequestDataNull();
+                afterRequestDataNull("");
             } else {
                 mAdapterNumber.addData(data);
 
