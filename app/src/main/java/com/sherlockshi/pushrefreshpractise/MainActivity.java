@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // 不使用 SmartRefreshLayout 的加载更多功能
-        mSmartRefreshLayout.setEnableAutoLoadMore(false);
+        mSmartRefreshLayout.setEnableLoadMore(false);
 
         mAdapterNumber = new BaseQuickAdapter<String, BaseViewHolder>(R.layout.item_number) {
             @Override
