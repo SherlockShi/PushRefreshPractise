@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void fail(Exception e) {
                 Toast.makeText(MainActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
-                afterRequestDataError("网络错误");
+                afterRequestDataError("网络错误", true);
             }
         }).start();
     }
@@ -148,12 +148,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void fail(Exception e) {
                 Toast.makeText(MainActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
-                afterRequestDataError("网络错误");
+                afterRequestDataError("网络错误", true);
             }
         }).start();
     }
 
-    private void afterRequestDataError(String msg) {
+    /**
+     *
+     * @param msg
+     * @param isRequestError 加载更多错误，或加载更多无数据
+     */
+    private void afterRequestDataError(String msg, boolean isRequestError) {
 //        if (!StringUtil.isEmpty(msg)) {
 //            ToastUtils.showWarn(msg);
 //        }
@@ -168,26 +173,11 @@ public class MainActivity extends AppCompatActivity {
             mAdapterNumber.setEnableLoadMore(true);
             mSmartRefreshLayout.finishRefresh();
         } else {
-            mAdapterNumber.loadMoreFail();
-        }
-    }
-
-    private void afterRequestDataNull(String msg) {
-//        if (!StringUtil.isEmpty(msg)) {
-//            ToastUtils.showWarn(msg);
-//        }
-
-        if (isRefresh) {
-            mAdapterNumber.setNewData(null);
-            if (mEmptyView.getParent() != null) {
-                ((ViewGroup) mEmptyView.getParent()).removeView(mEmptyView);
+            if (isRequestError) {
+                mAdapterNumber.loadMoreFail();
+            } else {
+                mAdapterNumber.loadMoreEnd(false);
             }
-            mAdapterNumber.setEmptyView(mEmptyView);
-
-            mAdapterNumber.setEnableLoadMore(true);
-            mSmartRefreshLayout.finishRefresh();
-        } else {
-            mAdapterNumber.loadMoreEnd(false);
         }
     }
 
@@ -197,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (isRefresh) {
             if (size <= 0) {
-                afterRequestDataNull("");
+                afterRequestDataError("", false);
             } else {
                 mAdapterNumber.setNewData(data);
 
@@ -211,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
             }
         } else {
             if (size <= 0) {
-                afterRequestDataNull("");
+                afterRequestDataError("", false);
             } else {
                 mAdapterNumber.addData(data);
 
