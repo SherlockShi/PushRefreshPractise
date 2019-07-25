@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void fail(Exception e) {
                 Toast.makeText(MainActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
-                afterRequestDataError("网络错误", true);
+                afterRequestDataError("网络错误");
             }
         }).start();
     }
@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void fail(Exception e) {
                 Toast.makeText(MainActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
-                afterRequestDataError("网络错误", true);
+                afterRequestDataError("网络错误");
             }
         }).start();
     }
@@ -156,28 +156,23 @@ public class MainActivity extends AppCompatActivity {
     /**
      *
      * @param msg
-     * @param isRequestError 加载更多错误，或加载更多无数据
      */
-    private void afterRequestDataError(String msg, boolean isRequestError) {
+    private void afterRequestDataError(String msg) {
 //        if (!StringUtil.isEmpty(msg)) {
 //            ToastUtils.showWarn(msg);
 //        }
 
         if (isRefresh) {
-            mAdapterNumber.setNewData(null);
             if (mEmptyView.getParent() != null) {
                 ((ViewGroup) mEmptyView.getParent()).removeView(mEmptyView);
             }
             mAdapterNumber.setEmptyView(mEmptyView);
 
+            mAdapterNumber.setNewData(null);
             mAdapterNumber.setEnableLoadMore(true);
             mSmartRefreshLayout.finishRefresh();
         } else {
-            if (isRequestError) {
-                mAdapterNumber.loadMoreFail();
-            } else {
-                mAdapterNumber.loadMoreEnd(false);
-            }
+            mAdapterNumber.loadMoreFail();
         }
     }
 
@@ -187,31 +182,23 @@ public class MainActivity extends AppCompatActivity {
 
         if (isRefresh) {
             if (size <= 0) {
-                afterRequestDataError("", false);
+                afterRequestDataError("");
             } else {
                 mAdapterNumber.setNewData(data);
-
                 mAdapterNumber.setEnableLoadMore(true);
                 mSmartRefreshLayout.finishRefresh();
-
-                if (size < PAGE_SIZE) {
-                    //第一页如果不够一页就不显示没有更多数据布局
-                    mAdapterNumber.loadMoreEnd(isRefresh);
-                }
             }
         } else {
-            if (size <= 0) {
-                afterRequestDataError("", false);
-            } else {
+            if (size > 0) {
                 mAdapterNumber.addData(data);
-
-                if (size < PAGE_SIZE) {
-                    //第一页如果不够一页就不显示没有更多数据布局
-                    mAdapterNumber.loadMoreEnd(isRefresh);
-                } else {
-                    mAdapterNumber.loadMoreComplete();
-                }
             }
+        }
+
+        if (size < PAGE_SIZE) {
+            //第一页如果不够一页就不显示没有更多数据布局
+            mAdapterNumber.loadMoreEnd(isRefresh);
+        } else {
+            mAdapterNumber.loadMoreComplete();
         }
     }
 }
